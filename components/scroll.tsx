@@ -1,6 +1,5 @@
 "use client";
 import { useRef } from "react";
-import type { CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Brain, Eye, Sparkles } from "lucide-react";
@@ -8,20 +7,30 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export default function Page() {
+const lines = [
+	{
+		first: "Control",
+		second: "Your",
+		icon: <Brain className="h-[var(--icon-size)] w-[var(--icon-size)]" strokeWidth={1.5} />,
+	},
+	{
+		first: "Mind",
+		second: "Manifest",
+		icon: <Sparkles className="h-[var(--icon-size)] w-[var(--icon-size)]" strokeWidth={1.5} />,
+	},
+	{
+		first: "Your",
+		second: "Reality",
+		icon: <Eye className="h-[var(--icon-size)] w-[var(--icon-size)]" strokeWidth={1.5} />,
+	},
+];
+
+export default function MindManifest() {
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const line1Ref = useRef<HTMLSpanElement>(null);
-	const line2Ref = useRef<HTMLSpanElement>(null);
-	const line3Ref = useRef<HTMLSpanElement>(null);
-
-	const controlWordRef = useRef<HTMLSpanElement>(null);
-	const mindWordRef = useRef<HTMLSpanElement>(null);
-	const yourLastWordRef = useRef<HTMLSpanElement>(null);
-
-	const brainIconRef = useRef<HTMLSpanElement>(null);
-	const sparklesIconRef = useRef<HTMLSpanElement>(null);
-	const eyeIconRef = useRef<HTMLSpanElement>(null);
+	const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
+	const firstWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+	const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
 	const paragraphRef = useRef<HTMLParagraphElement>(null);
 	const scrollHintRef = useRef<HTMLDivElement>(null);
@@ -29,7 +38,7 @@ export default function Page() {
 	useGSAP(
 		() => {
 			const ctx = gsap.context(() => {
-				gsap.set([brainIconRef.current, sparklesIconRef.current, eyeIconRef.current], {
+				gsap.set(iconRefs.current, {
 					width: 0,
 					autoAlpha: 0,
 					scale: 0.6,
@@ -46,59 +55,60 @@ export default function Page() {
 						trigger: containerRef.current,
 						start: "top top",
 						end: "+=2500",
-						scrub: 1,
+						scrub: 1.2,
 						pin: true,
+						anticipatePin: 1,
 					},
 				});
 
 				tl.to(
-					[brainIconRef.current, sparklesIconRef.current, eyeIconRef.current],
+					iconRefs.current,
 					{
 						width: "var(--icon-size)",
 						autoAlpha: 1,
 						scale: 1,
-						ease: "none",
+						ease: "power2.out",
 						duration: 1.8,
 					},
 					0
 				)
 					.to(
-						[controlWordRef.current, mindWordRef.current, yourLastWordRef.current],
+						firstWordRefs.current,
 						{
 							marginRight: "clamp(0.75rem, 5vw, 2.5rem)",
-							ease: "none",
+							ease: "power2.out",
 							duration: 1.8,
 						},
 						0
 					)
 					.to(
-						[line1Ref.current, line2Ref.current],
+						[lineRefs.current[0], lineRefs.current[1]],
 						{
 							autoAlpha: 0,
 							y: -40,
-							ease: "none",
-							duration: 0.9,
+							ease: "power2.inOut",
+							duration: 1.1,
 						},
 						2
 					)
 					.to(
-						yourLastWordRef.current,
+						firstWordRefs.current[2],
 						{
 							autoAlpha: 0,
-							ease: "none",
-							duration: 0.9,
+							ease: "power2.inOut",
+							duration: 1.1,
 						},
 						2
 					)
 					.to(
-						line3Ref.current,
+						lineRefs.current[2],
 						{
 							x: "30vw",
-							y: "35vh",
+							y: "20vh",
 							scale: 0.5,
 							transformOrigin: "center center",
-							ease: "none",
-							duration: 1.5,
+							ease: "power3.inOut",
+							duration: 1.7,
 						},
 						2
 					)
@@ -107,17 +117,17 @@ export default function Page() {
 						{
 							autoAlpha: 1,
 							y: 0,
-							ease: "none",
-							duration: 1,
+							ease: "power2.out",
+							duration: 1.2,
 						},
-						3.2
+						3.1
 					)
 					.to(
 						scrollHintRef.current,
 						{
 							autoAlpha: 0,
-							ease: "none",
-							duration: 0.25,
+							ease: "power1.out",
+							duration: 0.4,
 						},
 						0
 					);
@@ -128,45 +138,37 @@ export default function Page() {
 		{ scope: containerRef }
 	);
 
-	const iconWrapStyle = {
-		["--icon-size" as string]: "clamp(2rem, 7vw, 4.5rem)",
-	} as CSSProperties;
-
 	const lineClass =
-		"flex flex-nowrap items-center justify-center whitespace-nowrap text-foreground font-semibold tracking-tight text-[clamp(1.75rem,8vw,6rem)] leading-[1.1]";
+		"flex flex-nowrap items-center justify-center whitespace-nowrap text-foreground font-semibold tracking-tight text-[clamp(1.75rem,8vw,6rem)] leading-[1.1] text-zinc-300";
 
 	const iconChipClass =
-		"inline-flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-card/40 p-2 text-primary backdrop-blur-sm";
-
-	const iconSvgClass = "h-[var(--icon-size)] w-[var(--icon-size)]";
+		"inline-flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-card px-2 text-primary backdrop-blur-sm [--icon-size:clamp(2rem,7vw,4.5rem)]";
 
 	return (
-		<div ref={containerRef} className="relative w-full">
+		<div ref={containerRef} id="mind-manifest-section" className="relative z-10 w-full">
 			<div className="flex h-screen w-full items-center justify-center overflow-hidden">
 				<div className="relative flex h-full w-full flex-col items-center justify-center gap-[clamp(0.5rem,2vw,1.25rem)] px-[clamp(0.75rem,4vw,2rem)]">
-					<span ref={line1Ref} className={lineClass}>
-						<span ref={controlWordRef}>Control</span>
-						<span ref={brainIconRef} style={iconWrapStyle} className={iconChipClass}>
-							<Brain className={iconSvgClass} strokeWidth={1.5} />
+					{lines.map((line, index) => (
+						<span
+							key={line.first + line.second}
+							ref={(el) => {
+								lineRefs.current[index] = el;
+							}}
+							className={`${index === 2 ? `${lineClass} will-change-transform` : lineClass}`}>
+							<span ref={(el) => { firstWordRefs.current[index] = el; }} >
+								{line.first}
+							</span>
+							<span
+								ref={(el) => {
+									iconRefs.current[index] = el;
+								}}
+								className={iconChipClass}
+							>
+								{line.icon}
+							</span>
+							<span>{line.second}</span>
 						</span>
-						<span>Your</span>
-					</span>
-
-					<span ref={line2Ref} className={lineClass}>
-						<span ref={mindWordRef}>Mind</span>
-						<span ref={sparklesIconRef} style={iconWrapStyle} className={iconChipClass}>
-							<Sparkles className={iconSvgClass} strokeWidth={1.5} />
-						</span>
-						<span>Manifest</span>
-					</span>
-
-					<span ref={line3Ref} className={`${lineClass} will-change-transform`}>
-						<span ref={yourLastWordRef}>Your</span>
-						<span ref={eyeIconRef} style={iconWrapStyle} className={iconChipClass}>
-							<Eye className={iconSvgClass} strokeWidth={1.5} />
-						</span>
-						<span>Reality</span>
-					</span>
+					))}
 
 					<p
 						ref={paragraphRef}

@@ -1,23 +1,50 @@
 "use client";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import Beams from "@/components/Beams"
 import { useLoader } from "@/components/loaderContext";
 import { LaunchAppButton } from "./launchApp";
 
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export default function Hero() {
 	const ref = useRef<HTMLDivElement>(null);
+	const cardRef = useRef<HTMLDivElement>(null);
 	const inView = useInView(ref, { once: true, margin: "-100px" });
 	const { loaderDone } = useLoader();
 
 	const shouldAnimate = loaderDone && inView;
 	const parallelDelay = 1;
 
+	useGSAP(
+		() => {
+			const ctx = gsap.context(() => {
+				gsap.to(cardRef.current, {
+					scale: 0.88,
+					opacity: 1,
+					filter: "brightness(1)",
+					ease: "none",
+					scrollTrigger: {
+						trigger: "#mind-manifest-section",
+						start: "top bottom",
+						end: "top top",
+						scrub: true,
+					},
+				});
+			}, ref);
+
+			return () => ctx.revert();
+		},
+		{ scope: ref }
+	);
+
 	return (
 		<div
 			ref={ref}
-			className="h-screen w-full flex flex-col items-center justify-center gap-4 relative"
+			className="h-screen w-full flex flex-col items-center justify-center gap-4 relative sticky top-0 z-0"
 		>
 			<div className="h-full w-full absolute">
 				<Beams
@@ -33,7 +60,10 @@ export default function Hero() {
 			</div>
 
 
-			<div className="h-[80vh] w-[95vw] lg:w-[80vw] border border-zinc-900 rounded-4xl relative flex flex-col gap-10 items-center justify-center z-99 backdrop-blur-lg">
+			<div
+				ref={cardRef}
+				className="h-[80vh] w-[95vw] lg:w-[80vw] border border-zinc-900 rounded-4xl relative flex flex-col gap-10 items-center justify-center z-99 backdrop-blur-lg will-change-transform"
+			>
 				<div className="flex flex-col w-full items-center">
 					<motion.div
 						initial={{ opacity: 0, y: -16 }}
