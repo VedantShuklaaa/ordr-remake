@@ -149,6 +149,8 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
+  --font-druk: var(--font-druk);
+  --font-twid: var(--font-twid);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -167,6 +169,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --text-display-2xl: clamp(5rem, 18vw, 22rem);
 }
 
 @layer base {
@@ -177,6 +180,7 @@
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }

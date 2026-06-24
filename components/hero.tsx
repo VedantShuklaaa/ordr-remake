@@ -81,7 +81,7 @@ export default function Hero() {
 						className="leading-none flex flex-col gap-4 items-center text-center overflow-hidden w-full"
 						style={{ fontSize: "clamp(3.3rem, 6.5vw, 6.4rem)" }}
 					>
-						<div className="overflow-hidden z-11 flex flex-col font-mono">
+						<div className="overflow-hidden z-11 flex flex-col font-mono font-semibold">
 							<motion.h1
 								className="text-white [word-spacing:-1rem]"
 								initial={{ opacity: 0, y: "-110%" }}
